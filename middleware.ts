@@ -3,13 +3,21 @@ import {
   clerkMiddleware,
   createRouteMatcher,
 } from "@clerk/nextjs/server";
+import { routing } from "./i18n/routing";
+import createMiddleware from "next-intl/middleware";
+import { NextResponse } from "next/server";
 
-const isProtectedsRoute = createRouteMatcher(["/dashbord(.*)"]);
+//add secure path
+const isProtectedRoute = createRouteMatcher(["/server"]);
+
+const intlMiddleware = createMiddleware(routing);
 
 export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedsRoute(req)) {
+  if (isProtectedRoute(req)) {
     await auth.protect();
   }
+  const res = intlMiddleware(req);
+  return res ?? NextResponse.next();
 });
 
 export const config = {
