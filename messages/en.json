@@ -1,0 +1,16 @@
+{
+  "WELCOME": "Welcome",
+  "EMAIL_INVALID": "Invalid email",
+  "PASSWORD_MIN_LENGTH": "Password must be at least 3 characters",
+  "EMAIL": "Email",
+  "PASSWORD": "Password",
+  "CONNECTING": "Connecting...",
+  "SIGN_IN": "Sign In",
+  "SIGN_UP": "Sign Up",
+  "NO_ACCOUNT": "Don't have an account?",
+  "HAVE_ACCOUNT": "Already have an account?",
+  "REGISTER": "Register",
+  "LOGIN": "Login",
+  "UNKNOWN_ERROR": "Unknown error",
+  "FORGOT_PASSWORD": "Forgot Password"
+}

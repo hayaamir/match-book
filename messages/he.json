@@ -1,0 +1,16 @@
+{
+  "WELCOME": "ברוכים הבאים",
+  "EMAIL_INVALID": "כתובת אימייל לא תקינה",
+  "PASSWORD_MIN_LENGTH": "הסיסמה חייבת להכיל לפחות 3 תווים",
+  "EMAIL": "דואר אלקטרוני",
+  "PASSWORD": "סיסמה",
+  "CONNECTING": "מתחבר...",
+  "SIGN_IN": "התחבר",
+  "SIGN_UP": "הירשם",
+  "NO_ACCOUNT": "אין לך חשבון",
+  "HAVE_ACCOUNT": "יש לך כבר חשבון",
+  "REGISTER": "הרשמה",
+  "LOGIN": "התחברות",
+  "UNKNOWN_ERROR": "שגיאה לא ידועה",
+  "FORGOT_PASSWORD": "שכחתי סיסמה"
+}
