@@ -1,6 +1,6 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { internal, api } from "./_generated/api";
 import type { WebhookEvent } from "@clerk/backend";
 import { Webhook } from "svix";
 
@@ -15,7 +15,7 @@ http.route({
       return new Response("Error occured", { status: 400 });
     }
     switch (event.type) {
-      case "user.created": // intentional fallthrough
+      case "user.created":
       case "user.updated":
         await ctx.runMutation(internal.users.upsertFromClerk, {
           data: event.data,
@@ -50,5 +50,22 @@ async function validateRequest(req: Request): Promise<WebhookEvent | null> {
     return null;
   }
 }
+
+http.route({
+  path: "/createCandidate",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const body = await request.json();
+    const candidateId = await ctx.runMutation(
+      api.candidates.createCandidate,
+      body
+    );
+
+    return new Response(JSON.stringify({ success: true, candidateId }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }),
+});
 
 export default http;

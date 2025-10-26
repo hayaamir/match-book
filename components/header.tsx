@@ -10,10 +10,9 @@ import { Authenticated, Unauthenticated } from "convex/react";
 import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
 const menuItems = [
-  { name: "Features", href: "#link" },
-  { name: "Solution", href: "#link" },
-  { name: "Pricing", href: "#link" },
-  { name: "About", href: "#link" },
+  { name: "המחברת", href: "#link" },
+  { name: "פרופיל", href: "#link" },
+  { name: "שאלון", href: "#link" },
 ];
 
 export const HeroHeader = () => {

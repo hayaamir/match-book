@@ -8,7 +8,7 @@ import createMiddleware from "next-intl/middleware";
 import { NextResponse } from "next/server";
 
 //add secure path
-const isProtectedRoute = createRouteMatcher(["/server"]);
+const isProtectedRoute = createRouteMatcher(["/server", "/candidates"]);
 
 const intlMiddleware = createMiddleware(routing);
 
