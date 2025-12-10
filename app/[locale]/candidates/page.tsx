@@ -143,7 +143,7 @@ const Candidates = () => {
 
   return (
     <>
-      <div className=" border-b border-gray-100">
+      <div className="border-b border-gray-100 bg-red">
         <div className="max-w-4xl mx-auto px-6 py-6">
           <div className="flex items-center bg-white border border-gray-300 rounded-full shadow-sm hover:shadow-lg transition-shadow duration-200">
             <div className="flex-1 px-6 py-3">

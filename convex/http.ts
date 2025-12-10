@@ -3,6 +3,7 @@ import { httpAction } from "./_generated/server";
 import { internal, api } from "./_generated/api";
 import type { WebhookEvent } from "@clerk/backend";
 import { Webhook } from "svix";
+import { ConvexError } from "convex/values";
 
 const http = httpRouter();
 
@@ -55,16 +56,47 @@ http.route({
   path: "/createCandidate",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
-    const body = await request.json();
-    const candidateId = await ctx.runMutation(
-      api.candidates.createCandidate,
-      body
-    );
+    try {
+      const body = await request.json();
+      const candidateId = await ctx.runMutation(
+        api.candidates.createCandidate,
+        body
+      );
 
-    return new Response(JSON.stringify({ success: true, candidateId }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+      return new Response(JSON.stringify({ success: true, candidateId }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (error) {
+      if (error instanceof ConvexError) {
+        const errorData = error.data;
+
+        return new Response(
+          JSON.stringify({
+            success: false,
+            errorCode: errorData.type,
+            message: errorData.message,
+          }),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+
+      console.error(error);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          errorCode: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
   }),
 });
 

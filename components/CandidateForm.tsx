@@ -1,32 +1,41 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useMutation } from "convex/react";
-import { WithoutSystemFields } from "convex/server";
 import { toast } from "sonner";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 
-import { genderOptions, sectorOptions } from "../convex/schema";
-import { api } from "../convex/_generated/api";
 import type { Doc, Id } from "../convex/_generated/dataModel";
-import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { Form } from "./ui/form";
+import { TextEnum } from "@/i18n/TextEnum";
+import { useCreateCandidate } from "@/hooks/candidate/useCandidates";
+import { InputFormField, SelectFormField } from "./form-fields";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
+  zCandidatesTable,
+  zCandidateStatus,
+  zGender,
+  zSector,
+} from "@/shared/schema";
+import { zodUnionToOptions } from "@/lib/zodUnionToOptions";
 
-type CandidateFormValues = WithoutSystemFields<Doc<"candidates">>;
+export const candidateFormSchema = zCandidatesTable
+  .pick({
+    firstName: true,
+    lastName: true,
+    gender: true,
+    idNumber: true,
+    phone: true,
+    dateOfBirth: true,
+    status: true,
+  })
+  .extend({
+    sector: zSector.optional(),
+    status: zCandidateStatus.optional(),
+  });
+
+type CandidateFormValues = z.infer<typeof candidateFormSchema>;
 
 type Props = {
   candidateData: Doc<"candidates"> | null;
@@ -34,161 +43,114 @@ type Props = {
 };
 
 export function CandidateForm({ candidateData, candidateId }: Props) {
-  const createCandidate = useMutation(api.candidates.createCandidate);
+  const t = useTranslations();
+  const createCandidate = useCreateCandidate();
 
   const form = useForm<CandidateFormValues>({
+    resolver: zodResolver(candidateFormSchema),
     defaultValues: {
       firstName: candidateData?.firstName ?? "",
       lastName: candidateData?.lastName ?? "",
-      gender: candidateData?.gender,
+      gender: candidateData?.gender ?? undefined,
       dateOfBirth: candidateData?.dateOfBirth ?? "",
       phone: candidateData?.phone ?? "",
-      sector: candidateData?.sector ?? ("" as any),
+      sector: candidateData?.sector ?? undefined,
       status: candidateData?.status ?? "active",
+      idNumber: candidateData?.idNumber ?? "",
     },
   });
 
   const onSubmit = async (data: CandidateFormValues) => {
     try {
-      const newCandidateId = await createCandidate(data as any);
+      const newCandidateId = await createCandidate({
+        ...data,
+        sector: data.sector ?? "chabad",
+        status: data.status ?? "active",
+      });
 
-      toast.success("מועמד נוצר בהצלחה! 🎉", {
-        description: `${data.firstName} ${data.lastName} נוסף למערכת`,
-        action: {
-          label: "סגור",
-          onClick: () => console.log("Toast closed"),
-        },
+      toast.success(t(TextEnum.SUCCESS_CANDIDATE_CREATED), {
+        description: t(TextEnum.CANDIDATE_CREATED_DESCRIPTION, {
+          firstName: data.firstName,
+          lastName: data.lastName,
+        }),
       });
 
       form.reset();
     } catch (error) {
       console.error("שגיאה בשמירת מועמד:", error);
 
-      toast.error("אופס! משהו השתבש", {
-        description: "נסה שוב מאוחר יותר",
-        action: {
-          label: "נסה שוב",
-          onClick: () => form.handleSubmit(onSubmit)(),
-        },
+      toast.error(t(TextEnum.TOAST_ERROR_TITLE), {
+        description: t(TextEnum.TRY_LATER),
       });
     }
   };
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6 max-w-md mx-auto"
-      >
-        <FormField
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div>{t(TextEnum.PERSONAL_DETAILS)}</div>
+
+        <InputFormField
           control={form.control}
           name="firstName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>שם פרטי</FormLabel>
-              <FormControl>
-                <Input placeholder="הזן שם פרטי" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label={t(TextEnum.FIRST_NAME)}
+          placeholder={t(TextEnum.FIRST_NAME_PLACEHOLDER)}
         />
 
-        <FormField
+        <InputFormField
           control={form.control}
           name="lastName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>שם משפחה</FormLabel>
-              <FormControl>
-                <Input placeholder="הזן שם משפחה" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label={t(TextEnum.LAST_NAME)}
+          placeholder={t(TextEnum.LAST_NAME_PLACEHOLDER)}
         />
 
-        <FormField
+        <InputFormField
           control={form.control}
           name="dateOfBirth"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>תאריך לידה</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label={t(TextEnum.DATE_OF_BIRTH)}
+          type="date"
         />
 
-        <FormField
+        <InputFormField
+          control={form.control}
+          name="idNumber"
+          label={t(TextEnum.ID)}
+          placeholder={t(TextEnum.ID_PLACEHOLDER)}
+          type="text"
+        />
+
+        <SelectFormField
           control={form.control}
           name="gender"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>מגדר</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="בחר מגדר" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {genderOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          label={t(TextEnum.GENDER)}
+          placeholder={t(TextEnum.GENDER_PLACEHOLDER)}
+          options={zodUnionToOptions(zGender)}
         />
 
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>מספר טלפון</FormLabel>
-              <FormControl>
-                <Input placeholder="הזן מספר טלפון" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div>
+          <div>{t(TextEnum.CONTACT_DETAILS)}</div>
 
-        <FormField
-          control={form.control}
-          name="sector"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>מגזר</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="בחר מגזר" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {sectorOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <InputFormField
+            control={form.control}
+            name="phone"
+            label={t(TextEnum.PHONE)}
+            placeholder={t(TextEnum.PHONE_PLACEHOLDER)}
+            type="tel"
+          />
+        </div>
 
-        <Button type="submit" className="w-full">
-          הוסף מועמד
-        </Button>
+        <div>{t(TextEnum.ADDITIONAL_INFO)}</div>
+        <div>
+          <SelectFormField
+            control={form.control}
+            name="sector"
+            label={t(TextEnum.SECTOR)}
+            placeholder={t(TextEnum.SECTOR_PLACEHOLDER)}
+            options={zodUnionToOptions(zSector)}
+          />
+        </div>
+
+        <Button type="submit">{t(TextEnum.ADD_CANDIDATE_BUTTON)}</Button>
       </form>
     </Form>
   );
