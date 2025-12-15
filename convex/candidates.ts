@@ -1,7 +1,8 @@
 "use server";
 import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { getManyViaOrThrow } from "convex-helpers/server/relationships";
 
+import { mutation, query } from "./_generated/server";
 import { TextEnum } from "../i18n/TextEnum";
 import { vCandidateStatus, vGender, vSector } from "./enums";
 
@@ -29,12 +30,31 @@ export const createCandidate = mutation({
       });
     }
 
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const clerkUserId = identity.subject;
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("byClerkUserId", (q) => q.eq("clerkUserId", clerkUserId))
+      .unique();
+
+    if (!user) {
+      throw new Error("User document not found for this Clerk user");
+    }
+
     const now = Date.now();
-    return await ctx.db.insert("candidates", {
+    const candidateId = await ctx.db.insert("candidates", {
       ...args,
       createdAt: now,
       updatedAt: now,
     });
+
+    await ctx.db.insert("userCandidates", { userId: user._id, candidateId });
+    return candidateId;
   },
 });
 
@@ -58,33 +78,33 @@ export const updateCandidate = mutation({
   },
 });
 
-// export const getCandidates = query({
-//   args: {
-//     filter: v.optional(v.object({
-//       gender: v.optional(v.union(v.literal("male"), v.literal("female"), v.literal("all"))),
-//       status: v.optional(vCandidatesStatus),
-//       sector: v.optional(vSector),
-//     })),
-//     limit: v.optional(v.number()),
-//   },
-//   handler: async (ctx, args) => {
-//     const limit = args.limit || 40;
-//     let q = ctx.db.query("candidates");
-
-//     if (args.filter === "gender") {
-//       if (!args.gender) return [];
-//       q = q.filter((q) => q.eq(q.field("gender"), args.gender));
-//     }
-// })
-// export const getcandidtesByGender =
-
-export const getCandidateById = query({
-  args: { id: v.id("candidates") },
+export const getCandidatesByUserId = query({
+  args: {},
   handler: async (ctx, args) => {
-    const candidate = await ctx.db.get(args.id);
-    if (!candidate) {
-      throw new Error("Candidate not found");
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
     }
-    return candidate;
+
+    const clerkUserId = identity.subject;
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("byClerkUserId", (q) => q.eq("clerkUserId", clerkUserId))
+      .unique();
+
+    if (!user) {
+      throw new Error("User document not found for this Clerk user");
+    }
+
+    const candidates = await getManyViaOrThrow(
+      ctx.db,
+      "userCandidates",
+      "candidateId",
+      "byUserId",
+      user._id,
+      "userId"
+    );
+    return candidates;
   },
 });

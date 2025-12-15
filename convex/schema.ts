@@ -41,16 +41,18 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("byIdNumber", ["idNumber"]),
 
-  matchmakers_candidates: defineTable({
+  userCandidates: defineTable({
+    userId: v.id("users"),
     candidateId: v.id("candidates"),
-    shadchanId: v.id("users"),
-  }),
+  })
+    .index("byUserId", ["userId"])
+    .index("byCandidateId", ["candidateId"]),
 
   matches: defineTable({
     candidateAId: v.id("candidates"),
     candidateBId: v.id("candidates"),
-    shadchanAId: v.id("users"),
-    shadchanBId: v.id("users"),
+    userAId: v.id("users"),
+    userBId: v.id("users"),
     status: vMatchStatus,
     createdAt: v.number(),
     updatedAt: v.number(),
