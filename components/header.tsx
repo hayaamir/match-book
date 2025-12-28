@@ -15,7 +15,7 @@ export const Header = () => {
     <header className="w-full border-b bg-background">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
         <Link href="/" aria-label="home" className="flex items-center gap-3">
-          <img src="/logo.png" alt="Logo" className="h-12 w-auto" />
+          <img src="/Matchic.png" alt="Logo" className="h-12 w-auto" />
         </Link>
 
         <nav aria-label="primary">

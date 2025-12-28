@@ -1,9 +1,12 @@
 "use server";
 import { ConvexError, v } from "convex/values";
 import { getManyViaOrThrow } from "convex-helpers/server/relationships";
+import { paginationOptsValidator } from "convex/server";
+import { stream } from "convex-helpers/server/stream";
 
 import { mutation, query } from "./_generated/server";
 import { vCandidateStatus, vGender, vSector } from "./enums";
+import schema from "./schema";
 
 export const createCandidate = mutation({
   args: {
@@ -105,5 +108,46 @@ export const getCandidatesByUserId = query({
       "userId"
     );
     return candidates;
+  },
+});
+
+export const getPaginatedCandidates = query({
+  args: {
+    paginationOpts: paginationOptsValidator,
+    gender: v.optional(vGender),
+  },
+  handler: async (ctx, { paginationOpts, gender }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const clerkUserId = identity.subject;
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("byClerkUserId", (q) => q.eq("clerkUserId", clerkUserId))
+      .unique();
+
+    if (!user) throw new Error("User document not found for this Clerk user");
+
+    const result = await stream(ctx.db, schema)
+      .query("userCandidates")
+      .withIndex("byUserId", (q) => q.eq("userId", user._id))
+      .map(async (userCandidate) => {
+        const candidate = await ctx.db.get(userCandidate.candidateId);
+        return { ...userCandidate, candidate };
+      })
+
+      .filterWith(async (doc) => {
+        if (!gender) return true;
+        return doc.candidate?.gender === gender;
+      })
+      .paginate(paginationOpts);
+
+    return {
+      ...result,
+      page: result.page
+        .map((item) => item.candidate)
+        .filter((c): c is NonNullable<typeof c> => c !== null),
+    };
   },
 });

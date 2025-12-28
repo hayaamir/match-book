@@ -34,5 +34,9 @@
   "STATUS_ACTIVE": "Active",
   "STATUS_IN_DATE": "In Date",
   "STATUS_FOUND_MATCH": "Found Match",
-  "STATUS_ON_HOLD": "On Hold"
+  "STATUS_ON_HOLD": "On Hold",
+  "CREATED": "Created",
+  "ADDED_RECENTLY": "Added Recently",
+  "FEMALES": "Females",
+  "MALES": "Males"
 }

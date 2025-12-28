@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ווארט",
-  description: "ווארט",
+  title: "Matchic",
+  description: "Matchic",
   icons: {
     icon: "/favicon.png",
     apple: "/favicon.png",

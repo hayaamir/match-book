@@ -34,5 +34,9 @@
   "STATUS_ACTIVE": "פעיל",
   "STATUS_IN_DATE": "בפגישה",
   "STATUS_FOUND_MATCH": "נמצא שידוך",
-  "STATUS_ON_HOLD": "בהמתנה"
+  "STATUS_ON_HOLD": "בהמתנה",
+  "CREATED": "נוצר",
+  "ADDED_RECENTLY": "נוספו לאחרונה",
+  "FEMALES": "נשים",
+  "MALES": "גברים"
 }
