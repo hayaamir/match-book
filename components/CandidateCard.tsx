@@ -33,7 +33,7 @@ export const CandidateCard = ({
 
   return (
     <div className="flex flex-col gap-2 cursor-pointer">
-      <div className="relative w-56 h-56 lg:w-48 lg:h-48 overflow-hidden rounded-xl bg-gray-200 shadow-sm">
+      <div className="relative w-56 h-56 overflow-hidden rounded-xl bg-gray-200 shadow-sm">
         <StatusBadge status={status} className="absolute top-2 start-2 z-10">
           {t(`STATUS_${status.toUpperCase()}`)}
         </StatusBadge>

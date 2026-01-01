@@ -31,17 +31,21 @@ export const zSubscriptionStatus = z.union([
 
 export const zUsersTable = z.object({
   clerkUserId: z.string(),
-  firstName: z.string().min(2),
-  lastName: z.string().min(2),
-  email: z.string().email({
-    message: "כתובת אימייל לא תקינה",
-  }),
+  firstName: z.string().min(2).optional(),
+  lastName: z.string().min(2).optional(),
+  email: z
+    .string()
+    .email({
+      message: "כתובת אימייל לא תקינה",
+    })
+    .optional(),
   phone: z
     .string()
     .min(9)
     .regex(/^[\d\s\-\+\(\)]+$/, {
       message: "not valid",
-    }),
+    })
+    .optional(),
   subscriptionPlan: zSubscriptionPlan,
   subscriptionStatus: zSubscriptionStatus,
   subscriptionExpiry: z.number().optional(),
@@ -68,16 +72,16 @@ export const zCandidatesTable = z.object({
   updatedAt: z.number(),
 });
 
-export const zMatchmakersCandidatesTable = z.object({
+export const zUserCandidatesTable = z.object({
+  userId: z.string(),
   candidateId: z.string(),
-  shadchanId: z.string(),
 });
 
 export const zmatchesTable = z.object({
   candidateAId: z.string(),
   candidateBId: z.string(),
-  shadchanAId: z.string(),
-  shadchanBId: z.string(),
+  userAId: z.string(),
+  userBId: z.string(),
   status: zMatchStatus,
   createdAt: z.number(),
   updatedAt: z.number(),

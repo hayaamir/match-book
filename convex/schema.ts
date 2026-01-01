@@ -41,6 +41,13 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("byIdNumber", ["idNumber"]),
 
+  candidateImages: defineTable({
+    candidateId: v.id("candidates"),
+    storageId: v.id("_storage"),
+    uploadedAt: v.number(),
+    format: v.string(),
+  }).index("byCandidateId", ["candidateId"]),
+
   userCandidates: defineTable({
     userId: v.id("users"),
     candidateId: v.id("candidates"),

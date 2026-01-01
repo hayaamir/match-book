@@ -19,3 +19,11 @@ export function usePaginatedCandidates(gender?: "male" | "female") {
     { initialNumItems: 5 }
   );
 }
+
+export function useGenerateUploadUrl() {
+  return useMutation(api.candidates.generateUploadUrl);
+}
+
+export function useSendCandidateImage() {
+  return useMutation(api.candidates.sendImage);
+}

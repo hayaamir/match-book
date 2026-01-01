@@ -8,7 +8,7 @@ import {
   zSubscriptionStatus,
   zUsersTable,
   zCandidatesTable,
-  zMatchmakersCandidatesTable,
+  zUserCandidatesTable,
   zmatchesTable,
 } from "./schema";
 
@@ -20,7 +20,5 @@ export type SubscriptionPlan = z.infer<typeof zSubscriptionPlan>;
 export type SubscriptionStatus = z.infer<typeof zSubscriptionStatus>;
 export type UsersTable = z.infer<typeof zUsersTable>;
 export type CandidatesTable = z.infer<typeof zCandidatesTable>;
-export type MatchmakersCandidatesTable = z.infer<
-  typeof zMatchmakersCandidatesTable
->;
+export type UserCandidatesTable = z.infer<typeof zUserCandidatesTable>;
 export type matchesTable = z.infer<typeof zmatchesTable>;

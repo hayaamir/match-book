@@ -151,3 +151,25 @@ export const getPaginatedCandidates = query({
     };
   },
 });
+
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
+export const sendImage = mutation({
+  args: {
+    candidateId: v.id("candidates"),
+    storageId: v.id("_storage"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("candidateImages", {
+      candidateId: args.candidateId,
+      storageId: args.storageId,
+      uploadedAt: Date.now(),
+      format: "image",
+    });
+  },
+});

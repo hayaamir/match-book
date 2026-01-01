@@ -6,17 +6,17 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 
-import type { Doc, Id } from "../convex/_generated/dataModel";
-import { Button } from "./ui/button";
-import { Form } from "./ui/form";
+import type { Doc, Id } from "../../convex/_generated/dataModel";
+import { Button } from "../ui/button";
+import { Form } from "../ui/form";
 import { useCreateCandidate } from "@/hooks/candidate/useCandidates";
-import { InputFormField, SelectFormField } from "./form-fields";
+import { InputFormField, SelectFormField } from "../form-fields";
 import {
   zCandidatesTable,
   zCandidateStatus,
   zGender,
   zSector,
-} from "@/shared/schema";
+} from "@/lib/schema";
 import { zodUnionToOptions } from "@/lib/zodUnionToOptions";
 
 export const candidateFormSchema = zCandidatesTable
@@ -41,7 +41,7 @@ type Props = {
   candidateId: Id<"candidates"> | null;
 };
 
-export function CandidateForm({ candidateData, candidateId }: Props) {
+export function BasicDetails({ candidateData, candidateId }: Props) {
   const t = useTranslations();
   const createCandidate = useCreateCandidate();
 
