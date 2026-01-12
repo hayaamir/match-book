@@ -1,2 +1,2 @@
 export { BasicDetails } from "./BasicDetails";
-export { ImageUpload } from "./Imageupload";
+export { ImageUpload } from "../ui/Imageupload";

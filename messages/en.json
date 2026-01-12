@@ -36,7 +36,6 @@
   "STATUS_FOUND_MATCH": "Found Match",
   "STATUS_ON_HOLD": "On Hold",
   "CREATED": "Created",
-  "ADDED_RECENTLY": "Added Recently",
   "FEMALES": "Females",
   "MALES": "Males",
   "UPLOAD_IMAGE": "Click to upload or drag and drop",
@@ -44,5 +43,9 @@
   "SELECTED_OF": "{count}/3 selected",
   "PREVIEW_IMAGE": "Preview {index}",
   "UPLOAD_BUTTON_TEXT": "Upload {count, plural, one {# Image} other {# Images}}",
-  "IMAGE_SIZE_KB": "{size} KB"
+  "IMAGE_SIZE_KB": "{size} KB",
+  "BASIC_INFO": "Basic Info",
+  "UPLOAD_IMAGES": "Upload Images",
+  "PREV": "Prev",
+  "NEXT": "Next"
 }

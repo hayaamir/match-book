@@ -3,7 +3,9 @@ import { ConvexError, v } from "convex/values";
 import { getManyViaOrThrow } from "convex-helpers/server/relationships";
 import { paginationOptsValidator } from "convex/server";
 import { stream } from "convex-helpers/server/stream";
+import { faker } from "@faker-js/faker";
 
+import { internalMutation } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
 import { vCandidateStatus, vGender, vSector } from "./enums";
 import schema from "./schema";
@@ -152,24 +154,38 @@ export const getPaginatedCandidates = query({
   },
 });
 
-export const generateUploadUrl = mutation({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.storage.generateUploadUrl();
-  },
+export const createFakeCandidates = internalMutation(async (ctx) => {
+  faker.seed();
+  const statuses = ["active", "in_date", "found_match", "on_hold"] as const;
+  const genders = ["male", "female"] as const;
+
+  for (let i = 0; i < 50; i++) {
+    const now = Date.now();
+    await ctx.db.insert("candidates", {
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      gender: genders[Math.floor(Math.random() * genders.length)],
+      idNumber: faker.string.numeric(9),
+      phone: faker.phone.number(),
+      dateOfBirth: faker.date.past({ years: 30 }).toISOString(),
+      sector: "chabad",
+      status: statuses[Math.floor(Math.random() * statuses.length)],
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
 });
 
-export const sendImage = mutation({
-  args: {
-    candidateId: v.id("candidates"),
-    storageId: v.id("_storage"),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.insert("candidateImages", {
-      candidateId: args.candidateId,
-      storageId: args.storageId,
-      uploadedAt: Date.now(),
-      format: "image",
-    });
+export const LinkAllCandidatesToUser = mutation({
+  args: { userId: v.id("users") },
+  handler: async (ctx, { userId }) => {
+    const allCandidates = await ctx.db.query("candidates").collect();
+
+    for (const candidate of allCandidates) {
+      await ctx.db.insert("userCandidates", {
+        userId,
+        candidateId: candidate._id,
+      });
+    }
   },
 });

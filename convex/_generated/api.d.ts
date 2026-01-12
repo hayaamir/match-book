@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as candidateImages from "../candidateImages.js";
 import type * as candidates from "../candidates.js";
 import type * as enums from "../enums.js";
 import type * as http from "../http.js";
@@ -27,6 +28,7 @@ import type * as users from "../users.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  candidateImages: typeof candidateImages;
   candidates: typeof candidates;
   enums: typeof enums;
   http: typeof http;

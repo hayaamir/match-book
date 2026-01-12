@@ -36,7 +36,6 @@
   "STATUS_FOUND_MATCH": "נמצא שידוך",
   "STATUS_ON_HOLD": "בהמתנה",
   "CREATED": "נוצר",
-  "ADDED_RECENTLY": "נוספו לאחרונה",
   "FEMALES": "נשים",
   "MALES": "גברים",
   "UPLOAD_IMAGE": "לחץ כדי להעלות או גרור ושחרר תמונה",
@@ -44,5 +43,9 @@
   "SELECTED_OF": "{count}/3 {count, plural, one {נבחרה} other {נבחרו}}",
   "PREVIEW_IMAGE": "תצוגה מקדימה {index}",
   "UPLOAD_BUTTON_TEXT": "העלה {count, plural, one {# תמונה} other {# תמונות}}",
-  "IMAGE_SIZE_KB": "{size} KB"
+  "IMAGE_SIZE_KB": "{size} KB",
+  "BASIC_INFO": "מידע בסיסי",
+  "UPLOAD_IMAGES": "העלה תמונות",
+  "PREV": "הקודם",
+  "NEXT": "הבא"
 }

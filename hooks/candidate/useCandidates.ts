@@ -16,14 +16,6 @@ export function usePaginatedCandidates(gender?: "male" | "female") {
   return usePaginatedQuery(
     api.candidates.getPaginatedCandidates,
     { gender },
-    { initialNumItems: 5 }
+    { initialNumItems: 50 }
   );
-}
-
-export function useGenerateUploadUrl() {
-  return useMutation(api.candidates.generateUploadUrl);
-}
-
-export function useSendCandidateImage() {
-  return useMutation(api.candidates.sendImage);
 }

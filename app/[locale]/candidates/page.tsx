@@ -39,16 +39,7 @@ const Candidates = () => {
   )
     return <div>No candidates yet</div>;
 
-  return (
-    <>
-      <CandidatesSection
-        headerName={t("ADDED_RECENTLY")}
-        candidates={recentResults}
-      />
-      <CandidatesSection headerName={t("FEMALES")} candidates={femaleResults} />
-      <CandidatesSection headerName={t("MALES")} candidates={maleResults} />
-    </>
-  );
+  return <CandidatesSection candidates={recentResults} />;
 };
 
 export default Candidates;

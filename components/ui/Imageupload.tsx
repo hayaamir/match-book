@@ -1,13 +1,18 @@
 "use client";
 
 import { FormEvent, useRef, useState } from "react";
+import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react";
-import { useGenerateUploadUrl, useSendCandidateImage } from "@/hooks/candidate";
-import { Badge } from "../ui/badge";
-import { useTranslations } from "next-intl";
+import { Badge } from "./badge";
+import {
+  useSendCandidateImage,
+  useGenerateUploadUrl,
+  useGetCandidateImagesByCandidateId,
+} from "@/hooks/candidateImages";
 
 type ImageUploadProps = {
   candidateId: Id<"candidates">;
@@ -20,6 +25,9 @@ export const ImageUpload = ({ candidateId }: ImageUploadProps) => {
 
   const imageInput = useRef<HTMLInputElement>(null);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+
+  const MAX_IMG = 3;
+  const exsistingImages = useGetCandidateImagesByCandidateId(candidateId);
 
   const handleSendImages = async (event: FormEvent) => {
     event.preventDefault();
@@ -44,7 +52,8 @@ export const ImageUpload = ({ candidateId }: ImageUploadProps) => {
   const handleImageSelect = (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
-    const allowedFiles = 3 - selectedImages.length;
+    const allowedFiles =
+      MAX_IMG - (exsistingImages?.length ?? 0) - selectedImages.length;
     const filesToAdd = Array.from(files).slice(0, allowedFiles);
 
     setSelectedImages([...selectedImages, ...filesToAdd]);

@@ -1,88 +1,17 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
 
-import type { Doc, Id } from "../../convex/_generated/dataModel";
-import { Button } from "../ui/button";
 import { Form } from "../ui/form";
-import { useCreateCandidate } from "@/hooks/candidate/useCandidates";
 import { InputFormField, SelectFormField } from "../form-fields";
-import {
-  zCandidatesTable,
-  zCandidateStatus,
-  zGender,
-  zSector,
-} from "@/lib/schema";
+import { zGender, zSector } from "@/lib/schema";
+import { type CandidateFormValues, type BasicDetailsProps } from "./types";
 import { zodUnionToOptions } from "@/lib/zodUnionToOptions";
 
-export const candidateFormSchema = zCandidatesTable
-  .pick({
-    firstName: true,
-    lastName: true,
-    gender: true,
-    idNumber: true,
-    phone: true,
-    dateOfBirth: true,
-    status: true,
-  })
-  .extend({
-    sector: zSector.optional(),
-    status: zCandidateStatus.optional(),
-  });
-
-type CandidateFormValues = z.infer<typeof candidateFormSchema>;
-
-type Props = {
-  candidateData: Doc<"candidates"> | null;
-  candidateId: Id<"candidates"> | null;
-};
-
-export function BasicDetails({ candidateData, candidateId }: Props) {
+export function BasicDetails({ onSubmit }: BasicDetailsProps) {
   const t = useTranslations();
-  const createCandidate = useCreateCandidate();
-
-  const form = useForm<CandidateFormValues>({
-    resolver: zodResolver(candidateFormSchema),
-    defaultValues: {
-      firstName: candidateData?.firstName ?? "",
-      lastName: candidateData?.lastName ?? "",
-      gender: candidateData?.gender ?? undefined,
-      dateOfBirth: candidateData?.dateOfBirth ?? "",
-      phone: candidateData?.phone ?? "",
-      sector: candidateData?.sector ?? undefined,
-      status: candidateData?.status ?? "active",
-      idNumber: candidateData?.idNumber ?? "",
-    },
-  });
-
-  const onSubmit = async (data: CandidateFormValues) => {
-    try {
-      const newCandidateId = await createCandidate({
-        ...data,
-        sector: data.sector ?? "chabad",
-        status: data.status ?? "active",
-      });
-
-      toast.success(t("SUCCESS_CANDIDATE_CREATED"), {
-        description: t("CANDIDATE_CREATED_DESCRIPTION", {
-          firstName: data.firstName,
-          lastName: data.lastName,
-        }),
-      });
-
-      form.reset();
-    } catch (error) {
-      console.error("שגיאה בשמירת מועמד:", error);
-
-      toast.error(t("TOAST_ERROR_TITLE"), {
-        description: t("TRY_LATER"),
-      });
-    }
-  };
+  const form = useFormContext<CandidateFormValues>();
 
   return (
     <Form {...form}>
@@ -148,8 +77,6 @@ export function BasicDetails({ candidateData, candidateId }: Props) {
             options={zodUnionToOptions(zSector)}
           />
         </div>
-
-        <Button type="submit">{t("ADD_CANDIDATE_BUTTON")}</Button>
       </form>
     </Form>
   );
